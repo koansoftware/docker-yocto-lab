@@ -45,6 +45,8 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
 USER build
+WORKDIR /home/build
+CMD "/bin/bash"
 
 
 # --- Yocto setup ---
@@ -55,8 +57,5 @@ ENV YOCTO_RELEASE "sumo"
 RUN git clone -b ${YOCTO_RELEASE} git://git.yoctoproject.org/poky
 # ------
 
-
-WORKDIR /home/build
-CMD "/bin/bash"
 
 # EOF
