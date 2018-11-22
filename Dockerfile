@@ -10,7 +10,7 @@ RUN apt-get update && apt-get -y upgrade
 
 # Required Packages for the Host Development System
 # https://www.yoctoproject.org/docs/current/ref-manual/ref-manual.html#detailed-supported-distros
-RUN apt-get install gawk wget git-core diffstat unzip texinfo gcc-multilib \
+RUN apt-get install -y gawk wget git-core diffstat unzip texinfo gcc-multilib \
      build-essential chrpath socat cpio python python3 python3-pip python3-pexpect \
      xz-utils debianutils iputils-ping
 
