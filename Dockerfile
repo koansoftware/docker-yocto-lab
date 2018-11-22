@@ -1,24 +1,26 @@
 #
 # docker-yocto-lab
+# (C)2018 Marco Cavallini - KOAN - http://koansoftware.com
 #
 
 FROM ubuntu:16.04
 
-# This is the anti-frontend. It never interacts with you  at  all
-# and  makes  the  default answers  be used for all questions. 
-# The perfect frontend for automatic installs
-ENV DEBIAN_FRONTENV noninteractive
+# Avoid message debconf: delaying package configuration, since apt-utils is not installed
+ENV DEBIAN_FRONTEND noninteractive
+
+# We want to use bash
+SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update && apt-get -y upgrade
+
+# My selection of packages
+RUN apt-get install -y apt-utils tmux xz-utils libncurses5-dev
 
 # Required Packages for the Host Development System
 # https://www.yoctoproject.org/docs/current/ref-manual/ref-manual.html#detailed-supported-distros
 RUN apt-get install -y gawk wget git-core diffstat unzip texinfo gcc-multilib \
      build-essential chrpath socat cpio python python3 python3-pip python3-pexpect \
      xz-utils debianutils iputils-ping
-
-# My selecion of packages
-RUN apt-get install -y apt-utils tmux xz-utils libncurses5-dev
 
 # Additional host packages required by poky/scripts/wic
 RUN apt-get install -y curl dosfstools mtools parted syslinux tree
@@ -46,15 +48,28 @@ ENV LANGUAGE en_US.UTF-8
 
 USER build
 WORKDIR /home/build
-CMD "/bin/bash"
 
 
-# --- Yocto setup ---
+# --- Yocto Project ---
+
 # Set the Yocto release
 ENV YOCTO_RELEASE "sumo"
 
 # Install Poky
-RUN git clone -b ${YOCTO_RELEASE} git://git.yoctoproject.org/poky
+RUN git clone git://git.yoctoproject.org/poky -b ${YOCTO_RELEASE}
+
+# First setup
+WORKDIR /home/build/poky
+RUN  source oe-init-build-env
+
+# Adjust settings in local.conf
+ENV POKYCONFDIR "/home/build/poky/build/conf"
+RUN echo 'MACHINE = "qemuarm" ' >> ${POKYCONFDIR}/local.conf
+RUN echo 'PACKAGE_CLASSES = "package_ipk" ' >> ${POKYCONFDIR}/local.conf
+RUN echo 'INHERIT = "rm_work" ' >> ${POKYCONFDIR}/local.conf
+
+RUN tail /home/build/poky/build/conf/local.conf
+
 # ------
 
 
