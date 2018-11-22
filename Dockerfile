@@ -4,6 +4,9 @@
 
 FROM ubuntu:16.04
 
+# This is the anti-frontend. It never interacts with you  at  all
+# and  makes  the  default answers  be used for all questions. 
+# The perfect frontend for automatic installs
 ENV DEBIAN_FRONTENV noninteractive
 
 RUN apt-get update && apt-get -y upgrade
@@ -42,6 +45,17 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
 USER build
+
+
+# --- Yocto setup ---
+# Set the Yocto release
+ENV YOCTO_RELEASE "sumo"
+
+# Install Poky
+RUN git clone -b ${YOCTO_RELEASE} git://git.yoctoproject.org/poky
+# ------
+
+
 WORKDIR /home/build
 CMD "/bin/bash"
 
